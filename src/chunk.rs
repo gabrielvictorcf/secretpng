@@ -110,7 +110,7 @@ impl TryFrom<&[u8]> for Chunk {
 
 impl fmt::Display for Chunk {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Chunk {} with len {}\n{:?}", self.chunk_type, self.len, self.data)
+        write!(f, "Chunk {} with len {}\n\t{:?}", self.chunk_type, self.len, self.data)
     }
 }
 

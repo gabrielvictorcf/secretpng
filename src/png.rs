@@ -101,7 +101,7 @@ impl fmt::Display for Png {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		writeln!(f, "PNG image data has {} chunks", self.chunks.len())?;
 		for (i,chunk) in self.chunks.iter().enumerate() {
-			write!(f,"Chunk {}:\n\t{}",i,chunk)?;
+			write!(f,"Chunk {}:\n\t{}\n",i,chunk)?;
 		}
 		Ok(())
     }
