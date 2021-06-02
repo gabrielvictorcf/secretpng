@@ -42,18 +42,9 @@ impl Png {
 	}
 
     pub fn chunk_by_type(&self, chunk_type: &str) -> Option<&Chunk> {
-		let target_chunk = match ChunkType::from_str(chunk_type){
-			Ok(tc) => tc,
-			Err(_) => return None
-		};
-
-		for chunk in &self.chunks {
-			if chunk.chunk_type() == &target_chunk {
-				return Some(chunk);
-			}
-		}
-
-		None
+        // Creates a stub ChunkType, looks for a match in png.chunks and possibly returns it
+        let target_chunk = ChunkType::from_str(chunk_type).ok()?;
+        self.chunks.iter().find(|&chunk| chunk.chunk_type() == &target_chunk)
 	}
 
     pub fn as_bytes(&self) -> Vec<u8> {
