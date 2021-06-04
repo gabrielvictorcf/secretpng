@@ -1,6 +1,9 @@
-use std::{convert::{TryFrom, TryInto}, usize};
+use std::convert::{TryFrom, TryInto};
 use std::str::FromStr;
 use std::fmt;
+use std::path::Path;
+use std::fs::File;
+use std::io::{BufReader,Read};
 
 use crate::{Error,Result};
 use crate::chunk::Chunk;
@@ -17,6 +20,36 @@ impl Png {
     pub fn from_chunks(chunks: Vec<Chunk>) -> Png {
 		Png{header: Png::STANDARD_HEADER,chunks}
 	}
+
+    /// Creates a `Png` struct from a file path
+    pub fn from_file<P: AsRef<Path>>(path: &P) -> Result<Self> {
+        let png_file = File::open(path).unwrap();
+        let mut png_file = BufReader::new(png_file);
+
+        let mut header: [u8;8] = [0;8];
+        png_file.read_exact(&mut header)?;
+        if header != Png::STANDARD_HEADER {
+            return Err(Error::from("from_file read error: image has invalid header"));
+        }
+
+        let mut chunks = Vec::new();
+        let mut chunk_len = [0;4];
+        while png_file.read(&mut chunk_len)? > 0 {
+            // Initialize chunk memory then read into it
+            let mut chunk: Vec<u8> = vec![0;12 + u32::from_be_bytes(chunk_len) as usize];
+            chunk.splice(..4, chunk_len.iter().cloned());
+            png_file.read_exact(&mut chunk[4..])?;
+
+            // Validate read bytes and push chunk if Result(Chunk)
+            let chunk = Chunk::try_from(chunk.as_slice())?;
+            chunks.push(chunk);
+        }
+
+        Ok(Png{
+            header,
+            chunks
+        })
+    }
 
     pub fn append_chunk(&mut self, chunk: Chunk) {
 		self.chunks.push(chunk);
