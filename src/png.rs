@@ -14,14 +14,16 @@ pub struct Png {
 	chunks: Vec<Chunk>
 }
 
+// Png implementation based on specfication @ http://www.libpng.org/pub/png/spec/1.2/PNG-Structure.html
 impl Png {
 	pub const STANDARD_HEADER: [u8;8] = [137,80,78,71,13,10,26,10];
 	
+    /// Create a new Png from a vec of pre-processed chunks
     pub fn from_chunks(chunks: Vec<Chunk>) -> Png {
 		Png{header: Png::STANDARD_HEADER,chunks}
 	}
 
-    /// Creates a `Png` struct from a file path
+    /// Creates a new Png from the file in `path`
     pub fn from_file<P: AsRef<Path>>(path: &P) -> Result<Self> {
         let png_file = File::open(path).unwrap();
         let mut png_file = BufReader::new(png_file);
@@ -51,10 +53,12 @@ impl Png {
         })
     }
 
+    /// Inserts a new chunk at the end of Png's chunks
     pub fn append_chunk(&mut self, chunk: Chunk) {
 		self.chunks.push(chunk);
 	}
 
+    /// Removes the first chunk whose chunk type matches `chunk_type`, if it is present
     pub fn remove_chunk(&mut self, chunk_type: &str) -> Result<Chunk> {
 		let target_chunk = &ChunkType::from_str(chunk_type)?;
 		for (i, chunk) in self.chunks.iter_mut().enumerate() {
@@ -62,30 +66,32 @@ impl Png {
 				return Ok(self.chunks.remove(i));
 			}
 		}
-
 		Err(Error::from("Chunk not found in chunks list"))
 	}
 
+    /// Returns internal header (file magic number). Always Png::STANDARD_HEADER
     pub fn header(&self) -> &[u8; 8] {
 		&self.header
 	}
 
+    /// Returns a reference to Png's internal chunks
     pub fn chunks(&self) -> &[Chunk] {
 		&self.chunks
 	}
 
+    /// Searches for the first chunk whose chunk_type matches `chunk_type` and returns it, if found
     pub fn chunk_by_type(&self, chunk_type: &str) -> Option<&Chunk> {
         // Creates a stub ChunkType, looks for a match in png.chunks and possibly returns it
         let target_chunk = ChunkType::from_str(chunk_type).ok()?;
         self.chunks.iter().find(|&chunk| chunk.chunk_type() == &target_chunk)
 	}
 
+    /// Returns the whole Png as a bytes vector
     pub fn as_bytes(&self) -> Vec<u8> {
 		let mut bytes = Vec::from(self.header);
 		for chunk in &self.chunks {
 			bytes.append(&mut chunk.as_bytes());
 		}
-
 		bytes
 	}
 }
