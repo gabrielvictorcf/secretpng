@@ -85,13 +85,6 @@ impl TryFrom<&[u8]> for Chunk {
         let crc = chunk[(8+len as usize)..(12+len as usize)].try_into().unwrap();
         let crc = u32::from_be_bytes(crc);
 
-        let checksum_bytes: Vec<u8> = chunk_type
-            .bytes()
-            .iter()
-            .chain(data.iter())
-            .copied()
-            .collect();
-
         let calculated_crc: Vec<u8> = chunk_type.bytes().iter().chain(data.iter()).copied().collect();
         let calculated_crc = crc::crc32::checksum_ieee(&calculated_crc);
         if crc != calculated_crc {
