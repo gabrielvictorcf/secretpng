@@ -1,5 +1,5 @@
 # secretpng
-<img src="https://i.imgur.com/u0lJRTj.png" alt="img" align="right" width="400px">
+<img src="./crabby/lilcrab.png" alt="img" align="right" width="400px">
 
 Secretpng is a small, PNG encoder/decoder, cli tool  that can "hide" messages inside a file without changing, in
 any way, how the image is read or displayed by common viewers.
@@ -16,13 +16,18 @@ cargo install --branch main --git https://github.com/gabrielvictorcf/secretpng s
 ```
 
 # Usage
-Here are the commands available:
+Every command takes a path to a png file and, probably, a `chunk_type` argument which is a utf-8 string
+of length 4. Here's what's available:
 ```
-secretpng encode <image_path> <chunk_type> <message> -out_file # secretpng encode dice.png ruSt secretmsg
+# Encode - encode any utf-8 message and optionally save in an output file
+secretpng encode <image_path> <chunk_type> <message> -out_file # secretpng encode crab.png ruSt secretmsg
 
-secretpng decode <img_path> <chunk_type> # secretpng decode dice.png ruSt
+# Decode - find the message hidden in the chunk of chunk_type
+secretpng decode <img_path> <chunk_type> # secretpng decode crab.png ruSt
 
-secretpng remove <img_path> <chunk_type> # secretpng remove dice.png ruSt
+# Remove - remove the chunk with chunk_type from the image
+secretpng remove <img_path> <chunk_type> # secretpng remove crab.png ruSt
 
-secretpng print <img_path> # secretpng print dice.png
+# Print - print all chunks in an image, data is truncated to 60 for better visibility
+secretpng print <img_path> # secretpng print crab.png
 ```
