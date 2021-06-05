@@ -1,6 +1,6 @@
 [package]
 name = "secretpng"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["gabrielvictorcf <gabrielvcf@outlook.com>"]
 edition = "2018"
 

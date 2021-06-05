@@ -103,7 +103,9 @@ impl TryFrom<&[u8]> for Chunk {
 
 impl fmt::Display for Chunk {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Chunk {} with len {}\n\t{:?}", self.chunk_type, self.len, self.data)
+        let data_string: Vec<u8> = self.data.iter().cloned().take(60).collect();
+        let data_string = String::from_utf8_lossy(&data_string);
+        write!(f, "Chunk {} with len {}\n\t{}", self.chunk_type, self.len, data_string)
     }
 }
 
